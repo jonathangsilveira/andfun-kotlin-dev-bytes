@@ -17,6 +17,7 @@
 
 package com.example.android.devbyteviewer.ui
 
+//import androidx.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -26,14 +27,14 @@ import android.view.ViewGroup
 import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-//import androidx.lifecycle.ViewModelProviders
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.android.devbyteviewer.R
 import com.example.android.devbyteviewer.databinding.DevbyteItemBinding
 import com.example.android.devbyteviewer.databinding.FragmentDevByteBinding
+import com.example.android.devbyteviewer.di.ServiceLocator
 import com.example.android.devbyteviewer.domain.Video
 import com.example.android.devbyteviewer.viewmodels.DevByteViewModel
 
@@ -47,14 +48,14 @@ class DevByteFragment : Fragment() {
      * lazy. This requires that viewModel not be referenced before onViewCreated(), which we
      * do in this Fragment.
      */
-    private val viewModel: DevByteViewModel by lazy {
+    private val viewModel: DevByteViewModel by viewModels() {
         val activity = requireNotNull(this.activity) {
             "You can only access the viewModel after onViewCreated()"
         }
         //The ViewModelProviders (plural) is deprecated.  
         //ViewModelProviders.of(this, DevByteViewModel.Factory(activity.application)).get(DevByteViewModel::class.java)
-        ViewModelProvider(this, DevByteViewModel.Factory(activity.application)).get(DevByteViewModel::class.java)
-                
+        //ViewModelProvider(this, DevByteViewModel.Factory(activity.application)).get(DevByteViewModel::class.java)
+        ServiceLocator.provideDevByteViewModel(activity.application)
     }
 
     /**
@@ -70,11 +71,14 @@ class DevByteFragment : Fragment() {
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.playlist.observe(viewLifecycleOwner, Observer<List<Video>> { videos ->
-            videos?.apply {
-                viewModelAdapter?.videos = videos
-            }
-        })
+        viewModel.playlist.observe(
+                viewLifecycleOwner,
+                { videos ->
+                    videos?.apply {
+                        viewModelAdapter?.videos = videos
+                    }
+                }
+        )
     }
 
     /**
@@ -101,7 +105,7 @@ class DevByteFragment : Fragment() {
                 container,
                 false)
         // Set the lifecycleOwner so DataBinding can observe LiveData
-        binding.setLifecycleOwner(viewLifecycleOwner)
+        binding.lifecycleOwner = viewLifecycleOwner
 
         binding.viewModel = viewModel
 
