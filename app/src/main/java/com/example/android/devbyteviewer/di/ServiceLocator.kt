@@ -12,7 +12,7 @@ object ServiceLocator {
 
     fun provideDatabase(context: Context): VideosDatabase = getDatabase(context)
 
-    private fun createVideosRepository(database: VideosDatabase): VideosRepository {
+    fun createVideosRepository(database: VideosDatabase): VideosRepository {
         return VideosRepository(database)
     }
 

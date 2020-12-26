@@ -70,9 +70,6 @@ class DevByteViewModel(
     }
 
     /**
-     */
-
-    /**
      * Factory for constructing DevByteViewModel with parameter
      */
     class Factory(
