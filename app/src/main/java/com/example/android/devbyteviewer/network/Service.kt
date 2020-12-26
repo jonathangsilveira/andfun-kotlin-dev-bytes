@@ -23,6 +23,7 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import kotlinx.coroutines.Deferred
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
+import retrofit2.create
 import retrofit2.http.GET
 
 // Since we only have one service, this can all go in one file.
@@ -34,7 +35,7 @@ import retrofit2.http.GET
  */
 interface DevbyteService {
     @GET("devbytes.json")
-    fun getPlaylist(): Deferred<NetworkVideoContainer>
+    suspend fun getPlaylist(): NetworkVideoContainer
 }
 
 /**
@@ -56,5 +57,5 @@ object Network {
             .addCallAdapterFactory(CoroutineCallAdapterFactory())
             .build()
 
-    val devbytes = retrofit.create(DevbyteService::class.java)
+    val devbytes = retrofit.create<DevbyteService>()
 }
